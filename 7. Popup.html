@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Popup</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400" rel="stylesheet" />
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet" />
+    <style>
+      *,
+      *::after,
+      *::before {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: 'Open Sans';
+        font-weight: 300;
+      }
+      .title {
+        color: #db5b33;
+        font-weight: 300;
+        text-align: center;
+      }
+      /* 팝업을 위한 CSS */
+      .modal-container {
+        display: none;
+      }
+      .modal-container.is-active{
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: rgba(128, 128, 128, 0.349);
+        backdrop-filter: blur(5px);
+      }
+      .modal {
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        transform: translate3d(-50%, 0, 0);
+        width: 520px;
+        height: 250px;
+        background-color: white;
+        padding: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="title">Popup</h1>
+
+    <button class="popup-btn">toogle popup</button>
+
+    <!-- 팝업을 위한 HTML -->
+    <div class="modal-container">
+      <div class="modal">
+        <h2>Hello!</h2>
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Provident quos minus magnam impedit, atque odit animi quia, explicabo voluptate fuga, dolorem recusandae! Quidem impedit ducimus odit illum iure ullam beatae.</p>
+        <input class="input" type="text">
+        <button class="ok-btn">OK</button>
+        <button class="cancle-btn">Cancel</button>
+        <button class="x-btn">X</button>
+      </div>
+    </div>
+
+    <p class="popup-message"></p>
+    <script>
+      const $popupBtn = document.querySelector('.popup-btn');
+      const $modalContainer = document.querySelector('.modal-container');
+      const $input = document.querySelector('.input');
+      const $okBtn = document.querySelector('.ok-btn');
+      const $popupMsg = document.querySelector('.popup-message');
+
+      const addMsg = () => {
+        $modalContainer.classList.remove('is-active');
+        $popupMsg.textContent = 'from popup: ' + $input.value;
+      };
+      
+      $popupBtn.addEventListener('click', () => {
+        $modalContainer.classList.add('is-active');
+      });
+
+      $modalContainer.addEventListener('click', e => {
+        if (e.target.classList.contains('modal-container')
+          || e.target.classList.contains('cancle-btn')
+          || e.target.classList.contains('x-btn')) {
+          $modalContainer.classList.remove('is-active');
+        }
+      });
+      $input.addEventListener('keydown', e => {
+        if (e.key !== 'Enter') return;
+        addMsg();
+      });
+      $okBtn.addEventListener('click', () => {
+        addMsg();
+      });
+    </script>
+  </body>
+</html>
