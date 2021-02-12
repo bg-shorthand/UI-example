@@ -60,7 +60,7 @@
         color: #b63b4d;
       }
       /* Show submenu */
-      .accordion > .menu-container.active > .submenu {
+      /* .accordion > .menu-container.active > .submenu { */
         /*
         height: 0 -> height: auto;는 transition이 동작하지 않는다.
         max-height: 임의의 높이;를 지정하면 transition이 동작하지만 타이밍이 망가진다.
@@ -71,7 +71,7 @@
         /* max-height: 133px; */
         /* height: calc(43 * 3 * 1px); */
         /* height: auto; */
-      }
+      /* } */
       .accordion > .menu-container > .submenu {
         height: 0;
         overflow: hidden;
@@ -137,11 +137,9 @@
     <script>
       const $accordion = document.querySelector('.accordion');
 
-      document.querySelector('.accordion > .menu-container.active > .submenu').style.height = 3 * 43 + 'px';
-
       const height = () => {
         document.querySelectorAll('.menu-container').forEach(v => {
-          v.lastElementChild.style.height = v.classList.contains('active') ? `${v.lastElementChild.children.length * 43}px` : 0;
+          v.lastElementChild.style.height = v.classList.contains('active') ? `${v.lastElementChild.children.length * v.lastElementChild.firstElementChild.clientHeight}px` : 0;
         });
       };
 
@@ -153,7 +151,13 @@
         height();
       });
 
-      document.addEventListener('DOMContentLoaded', height);
+      document.addEventListener('DOMContentLoaded', () => {
+        $accordion.style.opacity = 0;
+        height();
+        setTimeout(() => {
+          $accordion.style.opacity = 1;
+        }, 400);
+      });
     </script>
   </body>
 </html>
