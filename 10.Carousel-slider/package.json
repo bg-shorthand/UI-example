@@ -1,0 +1,15 @@
+{
+  "name": "10.Carousel-slider",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "build": "webpack -w"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "lodash.throttle": "^4.1.1"
+  }
+}
