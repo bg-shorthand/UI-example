@@ -109,8 +109,11 @@
         });
 
         $container.appendChild($frag);
-        $carousel.style.width = $carouselSlides.firstElementChild.clientWidth + 'px';
-        $carousel.style.opacity = '1';
+
+        window.onload = () => {
+          $carousel.style.width = $carouselSlides.firstElementChild.clientWidth + 'px';
+          $carousel.style.opacity = '1';
+        };
 
         $carouselSlides.style.setProperty('--duration', '500');
       
