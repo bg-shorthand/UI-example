@@ -50,8 +50,8 @@
         <header class="cal-main__header">
           <button class="prevBtn">◀</button>
           <h2 class="year-month">
-            <div>january</div>
-            <div>2021</div>
+            <div class="month"></div>
+            <div class="year"></div>
           </h2>
           <button class="nextBtn">▶</button>
         </header>
@@ -67,35 +67,52 @@
       </article>
     </div>
     <script>
-      const $calMain = document.querySelector('.cal-main__main');
-      
-      const render = date => {
-        const today = new Date(date);
-        const firstDate = new Date(`${today.getFullYear()}-${today.getMonth() + 1}-1`);
-        const firstMon = new Date(firstDate - (86400000 * firstDate.getDay()));
+      const $calMainMain = document.querySelector('.cal-main__main');
+      const $month = document.querySelector('.month');
+      const $year = document.querySelector('.year');
 
-        const $frag = document.createDocumentFragment();
-
-        for (let i = 0; i < 42; i++) {
-          const $div = document.createElement('div');
-          $div.setAttribute('id', 'id-' + new Date(+firstMon + (86400000 * i)).toISOString().slice(0, 10));
-          $div.textContent = new Date(+firstMon + (86400000 * i)).getDate();
-          $frag.appendChild($div);
-        }
-
-        $calMain.appendChild($frag);
+      const state = {
+        year: new Date().getFullYear(),
+        month: new Date().getMonth(),
       };
 
-      document.addEventListener('DOMContentLoaded', () => {
-        render(new Date());
-      });
+      const render = () => {
+        $month.textContent = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(state.year, state.month, 1));
+        $year.textContent = state.year;
 
-      console.log(new Date(+new Date(`${new Date().getFullYear()}-${new Date().getMonth() + 2}`) - 86400000));
+        const curMonth = Array.from({ length: new Date(state.year, state.month + 1, 0).getDate() }, (v, i) => ({
+          date: i + 1,
+          day: new Date(state.year, state.month, i + 1).getDay()
+        }));
+      
+        const prevMonth = Array.from({ length: new Date(state.year, state.month, 1).getDay() }, (v, i) => ({
+          date: new Date(state.year, state.month, -(new Date(state.year, state.month, 0).getDay() - i)).getDate(),
+          day: new Date(state.year, state.month, -(new Date(state.year, state.month, 0).getDay() - i)).getDay()
+        }));
 
-      const month = Array.from({ length: new Date(+new Date(`${new Date().getFullYear()}-${new Date().getMonth() + 2}`) - 86400000).getDate() }, (v, i) => ({
-        
-      }));
-      console.log(month.length);
+        const nextMonth = Array.from({ length: 6 - new Date(state.year, state.month + 1, 0).getDay() }, (v, i) => ({
+          date: new Date(state.year, state.month + 1, i + 1).getDate(),
+          day: new Date(state.year, state.month + 1, i + 1).getDay()
+        }));
+
+        prevMonth.forEach(({ date }) => {
+          const $div = document.createElement('div');
+          $div.textContent = date;
+          $calMainMain.appendChild($div);
+        });
+        curMonth.forEach(({ date }) => {
+          const $div = document.createElement('div');
+          $div.textContent = date;
+          $calMainMain.appendChild($div);
+        });
+        nextMonth.forEach(({ date }) => {
+          const $div = document.createElement('div');
+          $div.textContent = date;
+          $calMainMain.appendChild($div);
+        });
+      };
+
+      document.addEventListener('DOMContentLoaded', render);
     </script>
   </body>
 </html>
