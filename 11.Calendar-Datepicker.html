@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calendar</title>
+    <!-- 원하는 폰트와 아이콘을 사용해도 좋다. -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400" rel="stylesheet" />
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet" />
+    <style>
+      *,
+      *::after,
+      *::before {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: 'Open Sans';
+        font-weight: 300;
+      }
+      .title {
+        color: #db5b33;
+        font-weight: 300;
+        text-align: center;
+      }
+
+      /* 뷰를 구현하세요. */
+      .calendar {
+        --width: 300;
+        width: (var(--width) + 'px');
+      }
+      .cal-main__header {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-evenly;
+      }
+      .cal-main__main {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        grid-template-rows: auto;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 class="title">Calendar</h1>
+    <div class="calendar">
+      <!-- 뷰를 구현하세요 -->
+      <input class="date-picker" type="text" readonly>
+      <article class="cal-main">
+        <header class="cal-main__header">
+          <button class="prevBtn">◀</button>
+          <h2 class="year-month">
+            <div>january</div>
+            <div>2021</div>
+          </h2>
+          <button class="nextBtn">▶</button>
+        </header>
+        <main class="cal-main__main">
+          <div>일</div>
+          <div>월</div>
+          <div>화</div>
+          <div>수</div>
+          <div>목</div>
+          <div>금</div>
+          <div>토</div>
+        </main>
+      </article>
+    </div>
+    <script>
+      const $calMain = document.querySelector('.cal-main__main');
+      
+      const render = date => {
+        const today = new Date(date);
+        const firstDate = new Date(`${today.getFullYear()}-${today.getMonth() + 1}-1`);
+        const firstMon = new Date(firstDate - (86400000 * firstDate.getDay()));
+
+        const $frag = document.createDocumentFragment();
+
+        for (let i = 0; i < 42; i++) {
+          const $div = document.createElement('div');
+          $div.setAttribute('id', 'id-' + new Date(+firstMon + (86400000 * i)).toISOString().slice(0, 10));
+          $div.textContent = new Date(+firstMon + (86400000 * i)).getDate();
+          $frag.appendChild($div);
+        }
+
+        $calMain.appendChild($frag);
+      };
+
+      document.addEventListener('DOMContentLoaded', () => {
+        render(new Date());
+      });
+
+      console.log(new Date(+new Date(`${new Date().getFullYear()}-${new Date().getMonth() + 2}`) - 86400000));
+
+      const month = Array.from({ length: new Date(+new Date(`${new Date().getFullYear()}-${new Date().getMonth() + 2}`) - 86400000).getDate() }, (v, i) => ({
+        
+      }));
+      console.log(month.length);
+    </script>
+  </body>
+</html>
