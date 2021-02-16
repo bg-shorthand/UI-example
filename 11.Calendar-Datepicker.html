@@ -24,20 +24,49 @@
       }
 
       /* 뷰를 구현하세요. */
+      :root {
+        --width: 500;
+      }
       .calendar {
-        --width: 300;
-        width: (var(--width) + 'px');
+        width: calc(var(--width) * 1px);
+        margin: 0 auto;
+      }
+      .date-picker {
+        margin: 0;
+      }
+      .cal-main {
+        display: none;
+        font-size: calc(var(--width) / 30 * 1px);
+      }
+      .cal-main.active {
+        display: block;
       }
       .cal-main__header {
         display: flex;
         flex-flow: row nowrap;
         justify-content: space-evenly;
+        align-items: center;
+      }
+      .cal-main__header button {
+        padding: 5px;
+      }
+      .year-month {
+        text-align: center;
       }
       .cal-main__main {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
         grid-template-rows: auto;
         text-align: center;
+      }
+      .cal-main__main div {
+        padding: 1em;
+      }
+      .today {
+        background-color: green;
+      }
+      .mouseover {
+        background-color: green;
       }
     </style>
   </head>
@@ -48,21 +77,14 @@
       <input class="date-picker" type="text" readonly>
       <article class="cal-main">
         <header class="cal-main__header">
-          <button class="prevBtn">◀</button>
+          <button class="prev-btn">◀</button>
           <h2 class="year-month">
             <div class="month"></div>
             <div class="year"></div>
           </h2>
-          <button class="nextBtn">▶</button>
+          <button class="next-btn">▶</button>
         </header>
         <main class="cal-main__main">
-          <div>일</div>
-          <div>월</div>
-          <div>화</div>
-          <div>수</div>
-          <div>목</div>
-          <div>금</div>
-          <div>토</div>
         </main>
       </article>
     </div>
@@ -70,6 +92,11 @@
       const $calMainMain = document.querySelector('.cal-main__main');
       const $month = document.querySelector('.month');
       const $year = document.querySelector('.year');
+      const $prevBtn = document.querySelector('.prev-btn');
+      const $nextBtn = document.querySelector('.next-btn');
+      const $datePicker = document.querySelector('.date-picker');
+      const $calMain = document.querySelector('.cal-main');
+      const $body = document.body;
 
       const state = {
         year: new Date().getFullYear(),
@@ -77,42 +104,101 @@
       };
 
       const render = () => {
+        $calMainMain.innerHTML = `<div>일</div>
+          <div>월</div>
+          <div>화</div>
+          <div>수</div>
+          <div>목</div>
+          <div>금</div>
+          <div>토</div>`;
+
         $month.textContent = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(state.year, state.month, 1));
         $year.textContent = state.year;
 
         const curMonth = Array.from({ length: new Date(state.year, state.month + 1, 0).getDate() }, (v, i) => ({
+          fullDate: new Date(state.year, state.month, i + 2).toISOString().slice(0, 10),
           date: i + 1,
           day: new Date(state.year, state.month, i + 1).getDay()
         }));
       
         const prevMonth = Array.from({ length: new Date(state.year, state.month, 1).getDay() }, (v, i) => ({
+          fullDate: new Date(state.year, state.month, -(new Date(state.year, state.month, 0).getDay() - i - 1)).toISOString().slice(0, 10),
           date: new Date(state.year, state.month, -(new Date(state.year, state.month, 0).getDay() - i)).getDate(),
           day: new Date(state.year, state.month, -(new Date(state.year, state.month, 0).getDay() - i)).getDay()
         }));
 
         const nextMonth = Array.from({ length: 6 - new Date(state.year, state.month + 1, 0).getDay() }, (v, i) => ({
+          fullDate: new Date(state.year, state.month + 1, i + 2).toISOString().slice(0, 10),
           date: new Date(state.year, state.month + 1, i + 1).getDate(),
-          day: new Date(state.year, state.month + 1, i + 1).getDay()
+          day: new Date(state.year, state.month + 1, i).getDay()
         }));
 
-        prevMonth.forEach(({ date }) => {
+        prevMonth.forEach(({ fullDate, date }) => {
           const $div = document.createElement('div');
           $div.textContent = date;
           $calMainMain.appendChild($div);
+          $div.classList.add('cal-main-date');
+          $div.setAttribute('id', fullDate);
         });
-        curMonth.forEach(({ date }) => {
+      
+        curMonth.forEach(({ fullDate, date }) => {
           const $div = document.createElement('div');
           $div.textContent = date;
           $calMainMain.appendChild($div);
+          $div.classList.add('cal-main-date');
+          $div.setAttribute('id', fullDate);
+
+          if (fullDate === new Date().toISOString().slice(0, 10)) $div.classList.add('today');
         });
-        nextMonth.forEach(({ date }) => {
+      
+        nextMonth.forEach(({ fullDate, date }) => {
           const $div = document.createElement('div');
           $div.textContent = date;
           $calMainMain.appendChild($div);
+          $div.classList.add('cal-main-date');
+          $div.setAttribute('id', fullDate);
         });
       };
 
       document.addEventListener('DOMContentLoaded', render);
+
+      $prevBtn.addEventListener('click', () => {
+        if (state.month > 0) state.month -= 1;
+        else {
+          state.month = 11;
+          state.year -= 1;
+        }
+        render();
+      });
+      $nextBtn.addEventListener('click', () => {
+        if (state.month < 11) state.month += 1;
+        else {
+          state.month = 0;
+          state.year += 1;
+        }
+        render();
+      });
+      $datePicker.addEventListener('click', () => {
+        $calMain.classList.add('active');
+      });
+      $calMainMain.addEventListener('mouseover', e => {
+        if (e.target.matches('.cal-main-date')) {
+          e.target.classList.add('mouseover');
+        }
+      });
+      $calMainMain.addEventListener('mouseout', e => {
+        if (e.target.matches('.cal-main-date')) {
+          e.target.classList.remove('mouseover');
+        }
+      });
+      $calMainMain.addEventListener('click', e => {
+        if (!e.target.matches('.cal-main-date')) return;
+        console.log(e.target.id);
+        $datePicker.value = e.target.id;
+      });
+      $body.addEventListener('click', e => {
+        if (e.target.matches('body')) $calMain.classList.remove('active');
+      });
     </script>
   </body>
 </html>
