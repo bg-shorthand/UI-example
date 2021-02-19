@@ -25,7 +25,7 @@
 
       /* 뷰를 구현하세요. */
       :root {
-        --width: 500;
+        --width: 0;
       }
       .calendar {
         width: calc(var(--width) * 1px);
@@ -35,8 +35,11 @@
         margin: 0;
       }
       .cal-main {
-        display: none;
+        display: block;
         font-size: calc(var(--width) / 30 * 1px);
+        margin-top: 10px;
+        border-radius: 10px;
+        box-shadow: 0 10px 20px gray;
       }
       .cal-main.active {
         display: block;
@@ -44,11 +47,20 @@
       .cal-main__header {
         display: flex;
         flex-flow: row nowrap;
-        justify-content: space-evenly;
+        justify-content: center;
         align-items: center;
+        color: white;
+        background-color: green;
+      }
+      .year-month {
+        display: block;
+        width: calc(var(--width) / 2 * 1px);
       }
       .cal-main__header button {
         padding: 5px;
+        color: white;
+        border: none;
+        background-color: rgba(255, 255, 255, 0);
       }
       .year-month {
         text-align: center;
@@ -61,6 +73,7 @@
       }
       .cal-main__main div {
         padding: 1em;
+        /* border-radius: 50%; */
       }
       .today {
         background-color: green;
@@ -104,6 +117,11 @@
       };
 
       const render = () => {
+        document.body.style.setProperty('--width', '500');
+
+        $month.textContent = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(state.year, state.month, 1));
+        $year.textContent = state.year;
+      
         $calMainMain.innerHTML = `<div>일</div>
           <div>월</div>
           <div>화</div>
@@ -111,9 +129,6 @@
           <div>목</div>
           <div>금</div>
           <div>토</div>`;
-
-        $month.textContent = new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(state.year, state.month, 1));
-        $year.textContent = state.year;
 
         const curMonth = Array.from({ length: new Date(state.year, state.month + 1, 0).getDate() }, (v, i) => ({
           fullDate: new Date(state.year, state.month, i + 2).toISOString().slice(0, 10),
@@ -133,30 +148,25 @@
           day: new Date(state.year, state.month + 1, i).getDay()
         }));
 
-        prevMonth.forEach(({ fullDate, date }) => {
+        const makeDate = (fullDate, date) => {
           const $div = document.createElement('div');
           $div.textContent = date;
           $calMainMain.appendChild($div);
           $div.classList.add('cal-main-date');
           $div.setAttribute('id', fullDate);
+          if (fullDate === new Date().toISOString().slice(0, 10)) $div.classList.add('today');
+        };
+      
+        prevMonth.forEach(({ fullDate, date }) => {
+          makeDate(fullDate, date);
         });
       
         curMonth.forEach(({ fullDate, date }) => {
-          const $div = document.createElement('div');
-          $div.textContent = date;
-          $calMainMain.appendChild($div);
-          $div.classList.add('cal-main-date');
-          $div.setAttribute('id', fullDate);
-
-          if (fullDate === new Date().toISOString().slice(0, 10)) $div.classList.add('today');
+          makeDate(fullDate, date);
         });
       
         nextMonth.forEach(({ fullDate, date }) => {
-          const $div = document.createElement('div');
-          $div.textContent = date;
-          $calMainMain.appendChild($div);
-          $div.classList.add('cal-main-date');
-          $div.setAttribute('id', fullDate);
+          makeDate(fullDate, date);
         });
       };
 
@@ -170,6 +180,7 @@
         }
         render();
       });
+      
       $nextBtn.addEventListener('click', () => {
         if (state.month < 11) state.month += 1;
         else {
@@ -178,24 +189,29 @@
         }
         render();
       });
+
       $datePicker.addEventListener('click', () => {
         $calMain.classList.add('active');
       });
+
       $calMainMain.addEventListener('mouseover', e => {
         if (e.target.matches('.cal-main-date')) {
           e.target.classList.add('mouseover');
         }
       });
+
       $calMainMain.addEventListener('mouseout', e => {
         if (e.target.matches('.cal-main-date')) {
           e.target.classList.remove('mouseover');
         }
       });
+
       $calMainMain.addEventListener('click', e => {
         if (!e.target.matches('.cal-main-date')) return;
         console.log(e.target.id);
         $datePicker.value = e.target.id;
       });
+
       $body.addEventListener('click', e => {
         if (e.target.matches('body')) $calMain.classList.remove('active');
       });

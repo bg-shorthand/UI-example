@@ -1,11 +1,11 @@
 const throttle = require('lodash.throttle');
 
-const $carousel = document.querySelector('.carousel');
-
 const carousel = ($container, images) => {
   // Do something!
   let currentSlide = 1;
+  const duration = 500;
 
+  const $carousel = document.querySelector('.carousel');
   const $frag = document.createDocumentFragment();
   const $carouselSlides = document.createElement('div');
   const $prevBtn = document.createElement('button');
@@ -42,7 +42,7 @@ const carousel = ($container, images) => {
     $carousel.style.opacity = '1';
   });
 
-  $carouselSlides.style.setProperty('--duration', '500');
+  $carouselSlides.style.setProperty('--duration', duration);
 
   $nextBtn.addEventListener('click', throttle(() => {
     currentSlide += 1;
